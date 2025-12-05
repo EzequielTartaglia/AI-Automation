@@ -1,0 +1,264 @@
+{
+  "name": "My workflow 4",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "=https://pokeapi.co/api/v2/pokemon-species/{{Math.floor(Math.random() * 151) + 1}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -576,
+        -16
+      ],
+      "id": "8bcd2331-3875-449b-8c59-f5424c3ff629",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtenemos los datos del nodo anterior\nconst data = items[0].json;\nconst nombre = data.name;\nconst id = data.id;\n\n// Buscamos todas las entradas de texto en ESPAÑOL ('es')\nconst entradasEnEspanol = data.flavor_text_entries.filter(entry => entry.language.name === 'es');\n\n// Si no hay en español (pasa en gen 1 a veces), buscamos en inglés, o tomamos la primera que haya\nconst entradaSeleccionada = entradasEnEspanol.length > 0 ? entradasEnEspanol[0] : data.flavor_text_entries.find(e => e.language.name === 'en');\n\n// Limpiamos el texto (la API trae saltos de linea raros como \\f o \\n)\nlet descripcionLimpia = entradaSeleccionada.flavor_text.replace(/[\\n\\f]/g, \" \");\n\n// Preparamos el resultado para el siguiente nodo\nreturn [\n  {\n    json: {\n      id: id,\n      nombre: nombre,\n      pista: descripcionLimpia,\n      // Construimos la URL de la imagen manualmente porque este endpoint no la trae\n      imagen: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -368,
+        -16
+      ],
+      "id": "4765e046-c77b-4a29-94ea-ff0eb1ef822a",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0A1E8BLZ1Q",
+          "mode": "list",
+          "cachedResultName": "todo-gera"
+        },
+        "text": "=🔎 **Adivina el Pokémon** Pokedex dice: \"{{ $json.content.parts[0].text }}\"",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        48,
+        -16
+      ],
+      "id": "2f5c7605-166b-4758-bdee-2d5a631667bd",
+      "name": "Send a message",
+      "webhookId": "683b2835-4e03-4a1f-bb35-43ccf363fece",
+      "credentials": {
+        "slackApi": {
+          "id": "g5bU9XtRL7jJ3Q3C",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 8
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        256,
+        -16
+      ],
+      "id": "3b376ddc-a72c-44af-9010-c5247d552284",
+      "name": "Wait",
+      "webhookId": "ce860412-8dc9-4ba8-977c-ccdcee908b0b"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0A1E8BLZ1Q",
+          "mode": "list",
+          "cachedResultName": "todo-gera"
+        },
+        "text": "=¡Es **{{ $('Code in JavaScript').item.json.nombre }}**!",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        464,
+        -16
+      ],
+      "id": "d56ef6b0-b5df-4a43-876e-452793d10553",
+      "name": "Send a message1",
+      "webhookId": "82ebdf7e-d19e-4ea1-9781-8e1ca8d2b8ae",
+      "credentials": {
+        "slackApi": {
+          "id": "g5bU9XtRL7jJ3Q3C",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0A1E8BLZ1Q",
+          "mode": "list",
+          "cachedResultName": "todo-gera"
+        },
+        "text": "={{ $('Code in JavaScript').item.json.imagen }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        -16
+      ],
+      "id": "465b7e2c-15dd-425e-b58e-5d1c64d92197",
+      "name": "Send a message2",
+      "webhookId": "2fbc359d-224d-4613-9ef7-04e871bbd2ca",
+      "credentials": {
+        "slackApi": {
+          "id": "g5bU9XtRL7jJ3Q3C",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Actúa como el Profesor Oak. Tengo esta descripción de Pokédex:\n\"{{ $json.pista }}\"\n\nReescríbela como un acertijo breve y misterioso para una trivia.\nNO digas el nombre del Pokémon.\nsolo di la trivia no agreges mas"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        -16
+      ],
+      "id": "6cc95611-451e-49dd-bc68-d003c8bc0635",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "rlhU0Zth5H75arrs",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -768,
+        -16
+      ],
+      "id": "d76fe9a1-a12b-45fa-98b6-9f64290c0afb",
+      "name": "When clicking ‘Execute workflow’"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a7803b64-8ade-4f4f-9bf3-3296d4840d6e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "90cd0d2337984e093b0360b427c5f02ad3502c17edaf55b92260877c7fd5e731"
+  },
+  "id": "uqlTVRdcMWrxnBc8",
+  "tags": []
+}
