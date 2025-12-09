@@ -1,0 +1,212 @@
+{
+  "name": "Automatización Message",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Eres el asistente virtual amable y profesional del salón de belleza \"Glamour BA\", ubicado en el corazón de Buenos Aires, Argentina.\n\nTu principal función es proporcionar información precisa sobre nuestros servicios, horarios, ubicación y precios, además de responder a cualquier otra consulta de manera atenta.\n\n### Información de Servicios y Precios:\n\n* **Corte de Pelo (Mujer):** $5000 ARS\n* **Corte de Pelo (Hombre):** $3500 ARS\n* **Peinado Básico (Secado y Planchado/Rulos):** $4000 ARS\n* **Peinado para Eventos (Recogidos/Trenzas elaboradas):** $7500 ARS\n* **Coloración Completa (Incluye diagnóstico):** Desde $10000 ARS (El precio varía según el largo).\n\n### Información Adicional Útil:\n\n* **Ubicación:** Estamos en el barrio de Palermo, CABA. (Puedes especificar una dirección más concreta si la tienes).\n* **Horario de Atención:** De martes a sábado, de 9:00 a 19:00 hs. Los domingos y lunes estamos cerrados.\n* **Formas de Pago:** Aceptamos efectivo, transferencia bancaria y tarjeta de débito/crédito (Visa y Mastercard).\n* **Reservas:** Para reservar un turno, el cliente debe contactar por WhatsApp al número 2215870423 o llamar al 4650218. *No tienes la capacidad de agendar turnos directamente, solo de dar la información de contacto.*\n\n---\n\n**Regla de Oro:** Responde siempre en español y con un tono cálido y profesional. Si te preguntan por un servicio no listado, indica que solo ofreces lo detallado o que deben consultar en el salón."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -80,
+        -16
+      ],
+      "id": "07e2def3-21cf-473d-821c-74a34870f07e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        144
+      ],
+      "id": "108a2bf5-f1b5-4283-ab03-34218e5df4cd",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "w25HHFD88NTnu61l",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        176,
+        272
+      ],
+      "id": "070e072a-4248-49e8-9e3d-d0b7edcdf823",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "content": "## 1° Chatbot\n\nIndicaremos al chatbot cómo debe comportarse a la hora de responder consultas.\n\na. En Source for Prompt seleccionamos \"Connected chat trigger node\".\nb. Continuaremos en \"Options\" seleccionaremos \"System Message\", en donde escribiremos un prompt con la información de nuestra empresa y que puede llegar a solicitar el usuario, por ejemplo:  Eres el asistente virtual amable y profesional del salón de belleza \"Glamour BA\", ubicado en el corazón de Buenos Aires, Argentina.\n\nTu principal función es proporcionar información precisa sobre nuestros servicios, horarios, ubicación y precios, además de responder a cualquier otra consulta de manera atenta.\n\n### Información de Servicios y Precios:\n\n* **Corte de Pelo (Mujer):** $5000 ARS\n* **Corte de Pelo (Hombre):** $3500 ARS\n* **Peinado Básico (Secado y Planchado/Rulos):** $4000 ARS\n* **Peinado para Eventos (Recogidos/Trenzas elaboradas):** $7500 ARS\n* **Coloración Completa (Incluye diagnóstico):** Desde $10000 ARS (El precio varía según el largo).\n\n### Información Adicional Útil:\n\n* **Ubicación:** Estamos en el barrio de Palermo, CABA. (Puedes especificar una dirección más concreta si la tienes).\n* **Horario de Atención:** De martes a sábado, de 9:00 a 19:00 hs. Los domingos y lunes estamos cerrados.\n* **Formas de Pago:** Aceptamos efectivo, transferencia bancaria y tarjeta de débito/crédito (Visa y Mastercard).\n* **Reservas:** Para reservar un turno, el cliente debe contactar por WhatsApp al número 2215870423 o llamar al 4650218. *No tienes la capacidad de agendar turnos directamente, solo de dar la información de contacto.*\n\n---\n\n**Regla de Oro:** Responde siempre en español y con un tono cálido y profesional. Si te preguntan por un servicio no listado, indica que solo ofreces lo detallado o que deben consultar en el salón.",
+        "height": 832,
+        "width": 848
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -128,
+        -720
+      ],
+      "typeVersion": 1,
+      "id": "be720eb5-c19f-4ba5-9559-3281a5ae9afc",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 2° Chat asistente\n\na. Activar chat publico y automáticamente otorga un webhook para integrar n8n con la página web\nb. Luego en \"Mode\" seleccionamos \"Embedded chat\" como parte de la integración.\nc. Una vez seleccionado Embedded, seleccionaremos \"Here\" en la notificación, allí nos dirigirá a la documentación oficial de n8n con los pasos para la instalación e integración.\nd. Una vez ingresado en https://www.npmjs.com/package/@n8n/chat?activeTab=code, seleccionamos el código que figura en la nota roja y lo pegamos en la pagina web, también se puede utilizar \"Options\"",
+        "height": 688,
+        "width": 224
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -368,
+        -544
+      ],
+      "typeVersion": 1,
+      "id": "a9d1c04b-cce1-475a-ae00-4846a97a82dd",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -288,
+        -16
+      ],
+      "id": "74fbd495-c719-4971-8ed0-b8b08d9ffd06",
+      "name": "Chat asistente para página web",
+      "webhookId": "96828960-66ac-4cf3-a865-b38d5633a8f0"
+    },
+    {
+      "parameters": {
+        "content": "Código para integrar en la página web\n\n<link href=\"https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css\" rel=\"stylesheet\" />\n<script type=\"module\">\n\timport { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';\n\n\tcreateChat({\n\t\twebhookUrl: 'https://aprendizajen8nch.app.n8n.cloud/webhook/96828960-66ac-4cf3-a865-b38d5633a8f0/chat'\n\t});\n</script>",
+        "height": 336,
+        "width": 400,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -784,
+        -272
+      ],
+      "typeVersion": 1,
+      "id": "8f6de6cd-5d29-4454-9e8b-126ae1454a3c",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Options\nThe default options are:\n\n```ts\ncreateChat({\n\twebhookUrl: '',\n\twebhookConfig: {\n\t\tmethod: 'POST',\n\t\theaders: {}\n\t},\n\ttarget: '#n8n-chat',\n\tmode: 'window',\n\tchatInputKey: 'chatInput',\n\tchatSessionKey: 'sessionId',\n\tloadPreviousSession: true,\n\tmetadata: {},\n\tshowWelcomeScreen: false,\n\tdefaultLanguage: 'en',\n\tinitialMessages: [\n\t\t'Hi there! 👋',\n\t\t'My name is Nathan. How can I assist you today?'\n\t],\n\ti18n: {\n\t\ten: {\n\t\t\ttitle: 'Hi there! 👋',\n\t\t\tsubtitle: \"Start a chat. We're here to help you 24/7.\",\n\t\t\tfooter: '',\n\t\t\tgetStarted: 'New Conversation',\n\t\t\tinputPlaceholder: 'Type your question..',\n\t\t},\n\t},\n\tenableStreaming: false,\n});",
+        "height": 624,
+        "width": 784,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1168,
+        80
+      ],
+      "typeVersion": 1,
+      "id": "a154b3fb-3394-40aa-863e-5d7fa1b07635",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": " ## Memoria\nSe agrega con el fin  de almacenar información que pueda otorgar el usuario",
+        "height": 256,
+        "width": 272
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        128,
+        128
+      ],
+      "typeVersion": 1,
+      "id": "6b3cea14-e63f-40be-972b-7347535d38bc",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "\n\n\n\n\n\n\n\n\n\n\n\n\n## Gemini \nEn esta parte las opciones se encuentran configuradas correctamente, por lo cual no realizaremos modificaciones.",
+        "height": 336,
+        "width": 208
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -128,
+        128
+      ],
+      "typeVersion": 1,
+      "id": "f5727943-4c63-497b-8f67-43bf441266a8",
+      "name": "Sticky Note5"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat asistente para página web": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "61ba383c-e10c-4b78-96c1-532e0024c5aa",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "89985a65df4b6892cfcddedacf017525ffd731aa5a07ed3497f23d4ea0ccb068"
+  },
+  "id": "OHz7JYkb3sA2t1Et",
+  "tags": []
+}
