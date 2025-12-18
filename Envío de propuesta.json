@@ -1,0 +1,438 @@
+{
+  "name": "Envío de propuesta",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Formulario de automatización de propuestas",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Nombre",
+              "placeholder": "Tu nombre aquí"
+            },
+            {
+              "fieldLabel": "Apellido"
+            },
+            {
+              "fieldLabel": "Nombre de la empresa"
+            },
+            {
+              "fieldLabel": "Correo electrónico",
+              "fieldType": "email"
+            },
+            {
+              "fieldLabel": "Problema",
+              "fieldType": "textarea"
+            },
+            {
+              "fieldLabel": "Solución"
+            },
+            {
+              "fieldLabel": "Coste total"
+            },
+            {
+              "fieldLabel": "Plazo"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -432,
+        0
+      ],
+      "id": "bce5e30f-480d-4a59-993e-61eb9db9f72f",
+      "name": "Formulario",
+      "webhookId": "a0c07a63-59c1-4f53-bc42-117b9efd143f"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Transforma los datos de entrada en una estructura JSON completa\n * para un informe de proyecto, cumpliendo con los requisitos de longitud\n * y formato económico.\n */\nfunction generarInformeEstructurado() {\n    const costoTotal = 1000;\n    const nombreCliente = \"Melina Lencina\";\n    const empresaCliente = \"Cognitive\";\n\n    // Los conceptos económicos deben sumar el costoTotal (1000)\n    const conceptosEconomicos = {\n        c1: 200, // Análisis y Definición\n        c2: 400, // Desarrollo e Implementación\n        c3: 200, // Integración y Pruebas\n        c4: 100, // Optimización y Ajustes\n        c5: 100  // Documentación y Soporte\n    };\n\n    const informe = {\n        \"Objetivo del proyecto\": \"El objetivo principal de este proyecto es transformar la gestión de las comunicaciones de la empresa Cognitive a través de WhatsApp Web, pasando de un proceso de respuesta manual que consume tiempo y es susceptible a errores a un sistema de automatización inteligente y eficiente. Esto se logrará mediante el desarrollo e implementación de un Bot de Respuesta Automática (Chatbot) que pueda gestionar eficazmente las consultas recurrentes, el soporte básico y las interacciones iniciales con los clientes. Buscamos reducir la carga de trabajo operativa del equipo de ventas y soporte en un mínimo de 30%, permitiendo que los recursos humanos se enfoquen en tareas de mayor complejidad, negociación y valor añadido que realmente requieran juicio humano especializado. La meta secundaria incluye incrementar la velocidad de respuesta al cliente, lo que impactará directamente en una mejora tangible de los niveles de satisfacción del cliente y posicionará a Cognitive como una empresa tecnológicamente avanzada y escalable en su comunicación con el mercado.\",\n        \n        \"nuestro enfoque\": \"Nuestro enfoque se basa en el desarrollo de una solución de automatización personalizada que aborde las necesidades específicas de Cognitive y su volumen de mensajería en WhatsApp Web. Iniciaremos con un análisis exhaustivo de los flujos de comunicación y la identificación de las 5 a 7 consultas más frecuentes que actualmente consumen el mayor tiempo operativo de su equipo de soporte. A partir de esta auditoría, diseñaremos la lógica conversacional del chatbot, priorizando una experiencia de usuario natural y resolutiva. La implementación utilizará las APIs o herramientas compatibles con WhatsApp Web para asegurar una integración nativa, con pruebas iniciales rigurosas en entornos de desarrollo y control de calidad (QA) para mitigar cualquier interrupción. La fase de despliegue incluirá capacitación intensiva al personal de Cognitive sobre la gestión, supervisión y mantenimiento básico del bot, garantizando que el sistema sea completamente autónomo y que el equipo pueda realizar ajustes menores sin necesidad de intervención externa. Este enfoque ágil (iterativo) nos permitirá entregar un producto funcional en el plazo de 15 días, maximizando el retorno de la inversión desde la puesta en marcha inicial.\",\n        \n        \"Nombre proyecto\": \"Sistema de Automatización de Mensajería WhatsApp para Cognitive\",\n        \n        \"concepto economico1\": \"Análisis y Definición de Flujos de Respuesta\",\n        \"concepto economico2\": \"Desarrollo e Implementación del Bot de Respuestas\",\n        \"concepto economico3\": \"Integración con WhatsApp Web y Pruebas Iniciales\",\n        \"concepto economico4\": \"Ajustes Post-Implementación y Optimización del Flujo\",\n        \"concepto economico5\": \"Documentación y Soporte Técnico Inicial\",\n        \n        \"concepto economico1_dolares\": conceptosEconomicos.c1,\n        \"concepto economico2_dolares\": conceptosEconomicos.c2,\n        \"concepto economico3_dolares\": conceptosEconomicos.c3,\n        \"concepto economico4_dolares\": conceptosEconomicos.c4,\n        \"concepto economico5_dolares\": conceptosEconomicos.c5,\n        \n        \"total_dolares\": conceptosEconomicos.c1 + conceptosEconomicos.c2 + conceptosEconomicos.c3 + conceptosEconomicos.c4 + conceptosEconomicos.c5,\n        \n        \"nombre_cliente\": nombreCliente,\n        \"empresa_cliente\": empresaCliente\n    };\n\n    // Devolvemos el objeto JSON en el formato de array de ítems de n8n\n    return [{ json: informe }];\n}\n\n// Para usar en un nodo Code de n8n, la función se ejecutaría:\nreturn generarInformeEstructurado();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        0
+      ],
+      "id": "960080d3-dda0-4922-9547-06e6eedb65da",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "content": "## Customizador",
+        "height": 224,
+        "width": 272,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -176,
+        -80
+      ],
+      "typeVersion": 1,
+      "id": "d49d76df-6147-4503-9f2a-ebeda2cd66a2",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Trigger",
+        "height": 224
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -496,
+        -80
+      ],
+      "typeVersion": 1,
+      "id": "2c70a069-5ad8-421f-b365-c54fc78c7d69",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-robotics-er-1.5-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-robotics-er-1.5-preview"
+        },
+        "messages": {
+          "values": [
+            {},
+            {
+              "content": "Esta propuesta debe estar altamente customizada ser especifica y de alta calidad considerando que la enviaremos a cliente finales sin revisión previa.\n\nContexto: Somos una agencia de automatización con IA que desarrolla sistema orientados a crecimiento empresarial, siempre hablamos en términos de retornos y ahorros de tiempo operativo.\n\nLa plantilla que vamos a utilizar en la propuesta tiene muchos campos, vas a devolver los campos específicos en formato JSON, usa el siguiente formato:\n\n{\n\n\"Objetivo del proyecto\": \"\",\n\"nuestro enfoque\": \"\",\n\"Nombre proyecto\": \"\",\n\"concepto economico1\": \"\",\n\"concepto economico2\": \"\",\n\"concepto economico3\": \"\",\n\"concepto economico4\": \"\",\n\"concepto economico5\": \"\",\n\"concepto economico1_dolares\": \"\",\n\"concepto economico2_dolares\": \"\",\n\"concepto economico3_dolares\": \"\",\n\"concepto economico4_dolares\": \"\",\n\"concepto economico5_dolares\": \"\",\n\"total_dolares\": \"\",\n\"nombre_cliente\": \"\",\n\"empresa_cliente\": \"\"\n\n}\n\nReglas:\n\n1.Usa un tono profesional cortés y conciso.\n\n2.Ve directo al grano pero mantén un tono muy profesional.\n\n3.Asegúrate de rellenar todos los campos y no omitas ninguna variable de las proporcionadas en el JSON de ejemplo.\n\n4.\"Objetivo del proyecto\" supera los 400 caracteres. Hazlo de igual forma con \"nuestro enfoque\".\n\n5.En \"concepto economicoN_dolares\" jamás uses \"dólares\" en texto simplemente arroja el valor numero y ya.\n\nEste valor del concepto económico siempre será el que suma el total.",
+              "role": "model"
+            },
+            {
+              "content": "={\n\n\"Nombre de la empresa\": \"{{ $json['Nombre de la empresa'] }}\",\n\"Problema\": \"{{ $json.Problema }}\",\n\"Solucion\": \"{{ $json['Solución'] }}\",\n\"Plazo\": \"{{ $json.Plazo }}\",\n\"Total\": \"{{ $json['Coste total'] }}\"\n\n}",
+              "role": "=user"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        0
+      ],
+      "id": "47b798e0-1657-4141-b180-7440305e2075",
+      "name": "Agente IA",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "w25HHFD88NTnu61l",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1HYyCNmrDvR9AMZh5D5oO1PZSCS8DGZeBO8ry4eV_QlQ",
+          "mode": "list",
+          "cachedResultName": "Cognitive",
+          "cachedResultUrl": "https://docs.google.com/presentation/d/1HYyCNmrDvR9AMZh5D5oO1PZSCS8DGZeBO8ry4eV_QlQ/edit?usp=drivesdk"
+        },
+        "name": "Cognitive",
+        "sameFolder": false,
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1OOPNjOZEiaBQQ4-GCILIISANokbRSrqv",
+          "mode": "list",
+          "cachedResultName": "CV",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1OOPNjOZEiaBQQ4-GCILIISANokbRSrqv"
+        },
+        "options": {
+          "copyRequiresWriterPermission": false,
+          "description": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        528,
+        0
+      ],
+      "id": "07414465-5691-4e96-a3cd-789b15d583b1",
+      "name": "copiar_propuesta_base",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "mXRTyZYVTr3zAk2R",
+          "name": "Google Drive account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Pasos a seguir para los permisos de Drive\n\nCrea tus credenciales de cliente de Google OAuth#\nA continuación, cree las credenciales del cliente OAuth en Google:\n\nAccede a tu consola de Google Cloud . Asegúrate de estar en el proyecto correcto.\n\nEn la sección API y servicios , seleccione Credenciales .\nSeleccione + Crear credenciales > ID de cliente OAuth .\nEn el menú desplegable Tipo de aplicación , seleccione Aplicación web .\nGoogle genera automáticamente un nombre . Actualízalo con algo que puedas reconocer en tu consola.\nSi usas tu propio alojamiento: desde tus credenciales n8n, copia la URL de redirección de OAuth . Pégala en las URL de redirección autorizadas de Google Console. Si usas n8n cloud , puedes dejar este campo vacío, ya que la configuración de OAuth está preconfigurada y la URL de devolución de llamada es fija para esa configuración.\nSeleccione Crear .\nhttps://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/?utm_source=n8n_app&utm_medium=credential_settings&utm_campaign=create_new_credentials_modal#create-your-google-oauth-client-credentials",
+        "height": 720,
+        "width": 448
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        336,
+        -576
+      ],
+      "typeVersion": 1,
+      "id": "85059c4d-a8f5-4099-8c2f-b0f69b55de19",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Formulario').item.json['Correo electrónico'] }}",
+        "subject": "=¡Gracias por contactarte, {{ $('Formulario').item.json['Nombre de la empresa'] }}!",
+        "emailType": "text",
+        "message": "=Hola {{ $('Formulario').item.json.Nombre }}.\n\nGracias por tu tiempo. He aprovechado para preparar una propuesta con más detalles definitivos posteriores a la exploración de necesidades. La encontrarás adjunta en este mismo correo.\n\nSi tienes cualquier tipo de duda, háznosla saber sin problemas.\n\nSaludos,\n\nEzequiel CEO Cognitive",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1360,
+        0
+      ],
+      "id": "8f373427-72c8-4137-be2d-666a78548f4a",
+      "name": "Send a message",
+      "webhookId": "d9353b2e-f206-4f4f-b6b7-93d5d7985eb0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6MJrpNXrgwKj5WdR",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "replaceText",
+        "presentationId": "={{ $json.id }}",
+        "textUi": {
+          "textValues": [
+            {
+              "pageObjectIds": [
+                "p"
+              ],
+              "text": "(Nombre)",
+              "replaceText": "={{ $('Formulario').item.json.Nombre }} "
+            },
+            {
+              "matchCase": true,
+              "pageObjectIds": [
+                "p"
+              ],
+              "text": "(nombre_proyecto)",
+              "replaceText": "={{ $('Code in JavaScript').item.json['Nombre proyecto'] }}"
+            },
+            {
+              "text": "(concepto1)",
+              "replaceText": "={{ $('Code in JavaScript').item.json['concepto economico1'] }}"
+            },
+            {
+              "text": "(concepto2)",
+              "replaceText": "={{ $('Code in JavaScript').item.json['concepto economico2'] }}"
+            },
+            {
+              "text": "(concepto3)",
+              "replaceText": "={{ $('Code in JavaScript').item.json['concepto economico3'] }}"
+            },
+            {
+              "text": "(concepto4)",
+              "replaceText": "={{ $('Code in JavaScript').item.json['concepto economico4'] }}"
+            },
+            {
+              "text": "(concepto5)",
+              "replaceText": "={{ $('Code in JavaScript').item.json['concepto economico5'] }}"
+            },
+            {
+              "text": "(precio1)",
+              "replaceText": "={{ $('Code in JavaScript').item.json['concepto economico1_dolares'] }} usd"
+            },
+            {
+              "text": "(precio2)",
+              "replaceText": "={{ $('Code in JavaScript').item.json['concepto economico2_dolares'] }} usd"
+            },
+            {
+              "text": "(precio3)",
+              "replaceText": "={{ $('Code in JavaScript').item.json['concepto economico3_dolares'] }} usd"
+            },
+            {
+              "text": "(precio4)",
+              "replaceText": "={{ $('Code in JavaScript').item.json['concepto economico4_dolares'] }} usd"
+            },
+            {
+              "text": "(precio5)",
+              "replaceText": "={{ $('Code in JavaScript').item.json['concepto economico5_dolares'] }} usd"
+            },
+            {
+              "text": "(total)",
+              "replaceText": "={{ $('Code in JavaScript').item.json.total_dolares }} usd"
+            },
+            {
+              "pageObjectIds": [
+                "p"
+              ],
+              "text": "fecha",
+              "replaceText": "={{ $now.format('yyyy-MM-dd') }}"
+            }
+          ]
+        },
+        "options": {
+          "revisionId": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSlides",
+      "typeVersion": 2,
+      "position": [
+        912,
+        0
+      ],
+      "id": "5118b157-306a-4fbc-a2f8-e6edae26bc4a",
+      "name": "plantilla_variable",
+      "credentials": {
+        "googleSlidesOAuth2Api": {
+          "id": "Acht9dBEkvuYL62l",
+          "name": "Google Slides account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('copiar_propuesta_base').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1136,
+        0
+      ],
+      "id": "437f3b4c-9e38-49ee-915f-a2994c8c83ae",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "mXRTyZYVTr3zAk2R",
+          "name": "Google Drive account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Envío de presentación\n\nUna vez realizados los permisos correspondientes, copiaremos el ID de nuestra presentación en *Presentation ID*",
+        "height": 352,
+        "width": 224
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        848,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "75a84e6d-2fe3-460c-8dce-524ec54001fa",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Formulario": {
+      "main": [
+        [
+          {
+            "node": "Agente IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "copiar_propuesta_base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente IA": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "copiar_propuesta_base": {
+      "main": [
+        [
+          {
+            "node": "plantilla_variable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "plantilla_variable": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c7f7f5cf-d125-493a-ac06-e875eeabb880",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "89985a65df4b6892cfcddedacf017525ffd731aa5a07ed3497f23d4ea0ccb068"
+  },
+  "id": "Y90be9gtl5y6SQ9c",
+  "tags": []
+}
