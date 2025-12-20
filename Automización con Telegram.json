@@ -1,89 +1,120 @@
 {
-  "name": "Automización con Telegram",
   "nodes": [
     {
       "parameters": {
         "content": "## Preparación en Telegram: \n\nEl primer paso es crear y obtener las credenciales de tu bot de Telegram:\n\nBusca a BotFather en Telegram (es el bot oficial y verificado).\n\nEnvía el comando /newbot.\n\nSigue las instrucciones para elegir un nombre para el bot (ej: \"MiBotDePrueba\") y un nombre de usuario (debe ser único y terminar en bot, ej: \"MiBotDePrueba_bot\").\n\nBotFather te proporcionará un Token de Acceso (Access Token). Cópialo y guárdalo, ya que es la clave para conectar n8n.\n\nVe a Credenciales (Credentials) y haz clic en Añadir Credencial (Add Credential).\n\nBusca y selecciona Telegram API (a veces solo Telegram).\n\nPega el Token de Acceso que obtuviste de BotFather en el campo correspondiente.\n\nGuarda la credencial",
-        "height": 768,
-        "width": 336
+        "height": 704,
+        "width": 592
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -304,
-        -608
+        -320,
+        208
       ],
       "typeVersion": 1,
-      "id": "d439305c-7b5d-4531-8ae0-8320d9bcc215",
+      "id": "b977e230-44b7-4aef-80c0-e695f28dc902",
       "name": "Sticky Note"
     },
     {
       "parameters": {
         "content": "## Establecer la acción:\n \nEn la configuración del nodo de acción, selecciona la misma credencial de Telegram.\n\nElige la Operación que quieres realizar, por ejemplo, Send a text message.\n\nPara que el bot responda en el mismo chat donde recibió el mensaje, debes usar una expresión para obtener el Chat ID del mensaje de entrada del Trigger. Generalmente se arrastra el campo Message > Chat > ID al campo \"Chat ID\" del nodo de acción.\n\nEscribe el texto del mensaje que deseas enviar como respuesta.",
-        "height": 560,
-        "width": 336
+        "height": 704,
+        "width": 608
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        400,
-        -400
+        1008,
+        208
       ],
       "typeVersion": 1,
-      "id": "dd460fb2-7485-45c8-9a38-7952850635f3",
+      "id": "1d586636-9ace-4e6b-be35-119466091106",
       "name": "Sticky Note2"
     },
     {
       "parameters": {
-        "modelId": {
-          "__rl": true,
-          "value": "models/gemini-robotics-er-1.5-preview",
-          "mode": "list",
-          "cachedResultName": "models/gemini-robotics-er-1.5-preview"
-        },
-        "messages": {
-          "values": [
-            {
-              "content": "={{ $json.message.text }}"
-            }
-          ]
-        },
+        "chatId": "={{ $('Telegram trigger (Envio de mensaje del al bot)').item.json.message.chat.id }}",
+        "text": "={{ $json.rawText }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1392,
+        640
+      ],
+      "id": "ce01805d-0102-4eca-8f25-7540e99c269a",
+      "name": "Envío de mensaje",
+      "webhookId": "8a42ff57-c6d0-41b0-9a7b-182dfe8bec1a",
+      "credentials": {
+        "telegramApi": {
+          "id": "E6bYT3HP4htiJmkt",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
         "options": {}
       },
-      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        528,
+        640
+      ],
+      "id": "dab4b77e-8d4f-42d6-b645-f345784764e8",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        96,
-        0
+        384,
+        768
       ],
-      "id": "798b02a1-51a7-41fe-89e7-6a4b1c2088e5",
-      "name": "IA Gemini",
+      "id": "ccee22cf-10cf-45f5-884b-cd5f01493bae",
+      "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
-          "id": "w25HHFD88NTnu61l",
+          "id": "DoSgJrpcpgcjgRbW",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
     },
     {
       "parameters": {
-        "chatId": "={{ $('Telegram trigger').item.json.message.chat.id }}",
-        "text": "={{ $json.content.parts[0].text }}",
-        "additionalFields": {}
+        "content": "## Agente IA\n\n**Transformacion y procesamiento del mensaje de texto recibido por whatsapp**:\n\n1. Asignar un chat-model de inteligencia artificial (cerebro digital) y crear o agregar las claves de api correspondientes (apikey): \n   - [Crear clave de api con Gemini](https://aistudio.google.com/apikey)\n\n2. Brindar system prompt relacionado al comportamiento del agente, se debe incluir lo siguiente:\n   - [Ver System Prompt](https://github.com/EzequielTartaglia/n8n-4-carnes/blob/main/workflows-n8n/System_prompt_chatbot_whatsApp__QR.txt)\n\n3. Configurar el user prompt relacionado al comportamiento del agente, se debe incluir lo siguiente::\n  \n   - message:  {{ $json.message.text }}\n\n4. Asignar una base de datos para que persista la informacion entre los mensajes de la misma converzacion.\n",
+        "height": 704,
+        "width": 704,
+        "color": 5
       },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
+      "type": "n8n-nodes-base.stickyNote",
       "position": [
-        496,
-        0
+        288,
+        208
       ],
-      "id": "26e5393a-31ce-4a96-bdb9-1f12a5c042d6",
-      "name": "Envío de mensaje",
-      "webhookId": "8a42ff57-c6d0-41b0-9a7b-182dfe8bec1a",
-      "credentials": {
-        "telegramApi": {
-          "id": "ZJiDP7Ohwh2ec1BW",
-          "name": "Telegram account"
-        }
-      }
+      "typeVersion": 1,
+      "id": "39e14009-640f-42bc-892d-777d54289586",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram trigger (Envio de mensaje del al bot)').item.json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        816,
+        768
+      ],
+      "id": "4d087e71-ced6-45ef-a4cc-522394579c22",
+      "name": "Brindar contexto (historial)"
     },
     {
       "parameters": {
@@ -95,23 +126,79 @@
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
       "position": [
-        -192,
-        0
+        -96,
+        640
       ],
-      "id": "f22bec4b-19a2-4b70-9dfe-7c4452b3e888",
-      "name": "Telegram trigger",
+      "id": "3de20e60-bd55-4003-a431-bd416ca0e814",
+      "name": "Telegram trigger (Envio de mensaje del al bot)",
       "webhookId": "1e85c075-ac35-415d-85e9-e9aceab5a887",
       "credentials": {
         "telegramApi": {
-          "id": "ZJiDP7Ohwh2ec1BW",
+          "id": "E6bYT3HP4htiJmkt",
           "name": "Telegram account"
         }
       }
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $input.first().json.output\n\nconst cleanedText = text.replace(/[_*[\\]()~`>#+=|{}.!<>]/g, '');\n\nreturn {\n  json: {\n    rawText: cleanedText\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1136,
+        640
+      ],
+      "id": "6825c0ca-9732-4b52-a8b0-b5585c606a7b",
+      "name": "Parsear respuesta"
     }
   ],
-  "pinData": {},
   "connections": {
-    "IA Gemini": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parsear respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brindar contexto (historial)": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram trigger (Envio de mensaje del al bot)": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear respuesta": {
       "main": [
         [
           {
@@ -121,28 +208,11 @@
           }
         ]
       ]
-    },
-    "Telegram trigger": {
-      "main": [
-        [
-          {
-            "node": "IA Gemini",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
-  "active": false,
-  "settings": {
-    "executionOrder": "v1"
-  },
-  "versionId": "492b308b-9815-4dc7-b96d-0024c62b5370",
+  "pinData": {},
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "89985a65df4b6892cfcddedacf017525ffd731aa5a07ed3497f23d4ea0ccb068"
-  },
-  "id": "Ix0vNPW3GD7TFUoR",
-  "tags": []
+    "instanceId": "6ea2ff2bd80fd0e91c36a581ac6ef409e08379a175ab07875060d9f884fa9465"
+  }
 }
