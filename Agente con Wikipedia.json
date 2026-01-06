@@ -1,0 +1,138 @@
+{
+  "name": "Agente con Wikipedia",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6c11d191-ca92-4b85-9391-0e02cc463112",
+      "name": "When chat message received",
+      "webhookId": "1ab98fd7-b0be-4df1-8292-132b06f22442"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Eres un asistente útil que responde exclusivamente a la última pregunta del usuario utilizando las herramientas disponibles"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "c8d20602-0819-41d2-8eb7-abdf460803e8",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        144,
+        208
+      ],
+      "id": "63f9b98d-7ebf-47ec-b853-570e09913ee5",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "w25HHFD88NTnu61l",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        208
+      ],
+      "id": "7afd1484-f5ed-43d1-8e26-36766c6d209c",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+      "typeVersion": 1,
+      "position": [
+        512,
+        176
+      ],
+      "id": "54bcf0ef-70d9-4ac5-9910-647413e6f7a3",
+      "name": "Wikipedia"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikipedia": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c9e98e89-0562-434c-98a6-7b6e940d75d3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "89985a65df4b6892cfcddedacf017525ffd731aa5a07ed3497f23d4ea0ccb068"
+  },
+  "id": "e0SRpOWslYgKEjBZ",
+  "tags": []
+}
