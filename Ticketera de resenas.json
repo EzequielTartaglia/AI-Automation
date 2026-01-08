@@ -1,0 +1,340 @@
+{
+  "name": "original",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1mvYBEct9lGD_6vztwArmvGkDmud9pYbueqdTE0pedNQ",
+          "mode": "list",
+          "cachedResultName": "PROYECTO N8N - PEDIDOS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mvYBEct9lGD_6vztwArmvGkDmud9pYbueqdTE0pedNQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mvYBEct9lGD_6vztwArmvGkDmud9pYbueqdTE0pedNQ/edit#gid=0"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "id": "40c37dc7-6f05-4b3e-ad10-6500c95b7b13",
+      "name": "Google Sheets Trigger",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Obtenemos la respuesta de la IA\nconst item = $input.first();\nconst respuesta = item.json.output || item.json.text || item.json.content || (item.json.message ? item.json.message.content : \"\") || \"\";\n\n// 2. Lógica para extraer el sentimiento (Igual que antes)\nconst jsonMatch = respuesta.toString().match(/\\{[\\s\\S]*\\}/);\nlet sentiment = \"POSITIVO\"; // Default\n\nif (jsonMatch) {\n  try {\n    const parsed = JSON.parse(jsonMatch[0]);\n    sentiment = parsed.sentiment || sentiment;\n  } catch (e) {}\n} else {\n  if (respuesta.toString().toUpperCase().includes(\"NEGATIVO\")) {\n    sentiment = \"NEGATIVO\";\n  }\n}\n\n// 3. ¡LA CLAVE! Rescatamos los datos originales del Trigger\n// Usamos la función $('...') para traer los datos de la hoja de cálculo aquí mismo\nconst datosOriginales = $('Google Sheets Trigger').first().json;\n\n// 4. Devolvemos todo junto: El sentimiento limpio + Los datos del cliente\nreturn {\n  json: {\n    sentiment_limpio: sentiment.toUpperCase(),\n    Nombre: datosOriginales.Nombre,\n    Email: datosOriginales.Email,\n    Producto_Base: datosOriginales.Producto_Base,\n    Nota_Cliente: datosOriginales.Nota_Cliente\n  }\n};"
+      },
+      "id": "6aa254e3-2e3a-49a2-8b60-2a7c4f252e7a",
+      "name": "Limpiar JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -688,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Limpiar JSON').item.json.Email }}",
+        "subject": "Oferta Especial",
+        "message": "={{ $json.content.parts[0].text }}",
+        "options": {}
+      },
+      "id": "93e55a37-3be9-4f52-a2ff-db1693372fd7",
+      "name": "Gmail Oferta",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -48,
+        -80
+      ],
+      "webhookId": "5ca8865c-e875-4b02-9dc3-666b8c6e5ec3"
+    },
+    {
+      "parameters": {
+        "sendTo": "=pablitoalvesss@gmail.com",
+        "subject": "Alerta Soporte",
+        "message": "={{ $json.content.parts[0].text }}",
+        "options": {}
+      },
+      "id": "94439ced-9d74-446c-9a0c-6a9f7422b1e2",
+      "name": "Gmail Alerta",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -48,
+        160
+      ],
+      "webhookId": "b648c9f7-cb85-4ee6-a603-28cf45fcd9c4"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Actúa como un sistema de clasificación. Analiza: \"{{ $('Google Sheets Trigger').item.json.Nota_Cliente }}\" Responde ÚNICAMENTE con un JSON: { \"sentiment\": \"POSITIVO\" } o { \"sentiment\": \"NEGATIVO\" }"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -992,
+        48
+      ],
+      "id": "b967dc2c-a7fa-428b-85aa-f1b6c9119df6",
+      "name": "clasificador",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tFc40qg9zRuN9wQL",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Actúa como Marco. El cliente {{ $json.Nombre }} compró {{ $json.Producto_Base }}. Redacta un email corto y amable agradeciendo la compra y recomendando un producto complementario. Sin asunto."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -336,
+        -80
+      ],
+      "id": "c4f024f8-5188-49ff-82a4-5bf37b4aa2f4",
+      "name": "vendedor",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tFc40qg9zRuN9wQL",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Actúa como experto en soporte.\nAnaliza la siguiente queja: \"{{ $('Google Sheets Trigger').first().json.Nota_Cliente }}\"\n\nGenera un resumen ejecutivo con:\n- Cliente: {{ $('Google Sheets Trigger').first().json.Nombre }}\n- Problema principal: (Resumen en 1 frase)\n- Nivel de Urgencia: (Alta/Media)"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -352,
+        160
+      ],
+      "id": "3f6fc164-caee-4b65-bc7c-66401dd6e297",
+      "name": "soporte",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "tFc40qg9zRuN9wQL",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.sentiment_limpio }}",
+                    "rightValue": "POSITIVO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "dbb95604-3d10-4bdb-8a90-5dceecda7bba"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Es positivo"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "79732054-8860-48a4-865a-73f8dc727992",
+                    "leftValue": "={{ $json.sentiment_limpio }}",
+                    "rightValue": "NEGATIVO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Es negativo"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -528,
+        48
+      ],
+      "id": "56534b65-3be1-428e-b891-1e7f25e163ca",
+      "name": "Switch"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Limpiar JSON": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "clasificador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "soporte": {
+      "main": [
+        [
+          {
+            "node": "Gmail Alerta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "vendedor": {
+      "main": [
+        [
+          {
+            "node": "Gmail Oferta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clasificador": {
+      "main": [
+        [
+          {
+            "node": "Limpiar JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "vendedor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "soporte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c095b9f283341e85f1c871af59b08e3b4c309c5828fbaa1dcf24ec0f2cc23a73"
+  },
+  "id": "s6ZKrO1_2QZ27WWKa-IPO",
+  "tags": []
+}
