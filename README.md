@@ -29,7 +29,7 @@ Verificar instalación:
 node -v
 npm -v
 ```
-
+(En caso de falla ejecutar Set-ExecutionPolicy RemoteSigned -Scope CurrentUser en la consola)
 ---
 
 ## ✅ Paso 2 — Instalar n8n globalmente
