@@ -141,13 +141,3 @@ Ya tenés n8n corriendo como servidor local en Windows.
 Podés crear automatizaciones, webhooks y flujos sin necesidad de Docker.
 
 ---
-
-Si querés una guía avanzada:
-
-* Base de datos externa (PostgreSQL)
-* Exponer n8n a internet
-* Deploy en VPS
-* Webhooks en producción
-* HTTPS + dominio
-
-Decime y la armamos paso a paso.
