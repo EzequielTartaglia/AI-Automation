@@ -1,5 +1,4 @@
 {
-  "name": "Resumen de emails y almacenamiento en Google Sheets",
   "nodes": [
     {
       "parameters": {
@@ -20,6 +19,9 @@
       ],
       "id": "a320d826-c37e-4ee9-95f2-6cdca2a8f137",
       "name": "Gmail Trigger",
+      "retryOnFail": false,
+      "notesInFlow": false,
+      "alwaysOutputData": false,
       "credentials": {
         "gmailOAuth2": {
           "id": "X5WVX6tEpxZP6yCa",
@@ -38,11 +40,12 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        64,
-        -32
+        496,
+        32
       ],
       "id": "55832caf-29ae-43e9-9424-a7cb3194b177",
-      "name": "AI Agent"
+      "name": "AI Agent",
+      "retryOnFail": false
     },
     {
       "parameters": {
@@ -51,8 +54,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        16,
-        144
+        448,
+        208
       ],
       "id": "bf6f71b3-062f-4155-94d0-600ad288eb53",
       "name": "Google Gemini Chat Model",
@@ -85,10 +88,23 @@
           "value": {
             "asunto": "={{ $('Gmail Trigger').item.json.Subject }}",
             "email": "={{ $('Gmail Trigger').item.json.From }}",
-            "resumen": "={{ $json.output }}"
+            "resumen": "={{ $json.output }}",
+            "id": "={{ $('Gmail Trigger').item.json.id }}"
           },
-          "matchingColumns": [],
+          "matchingColumns": [
+            "id"
+          ],
           "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
             {
               "id": "asunto",
               "displayName": "asunto",
@@ -125,8 +141,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        400,
-        -32
+        848,
+        32
       ],
       "id": "8e94dd42-6a08-4eee-a481-0f23a9254a35",
       "name": "Append row in sheet",
@@ -136,15 +152,108 @@
           "name": "Google Sheets account"
         }
       }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e1b4f722-eb8d-40c5-8bb6-021312ee445c",
+              "leftValue": "={{ $json.row_number }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        256,
+        -32
+      ],
+      "id": "7d648518-ae9c-48ea-b020-2e8960ce57d4",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1rmPe7iUA4CerYm2Dw_-6E8-sHgyBeFR5hIhL8LVgx30",
+          "mode": "list",
+          "cachedResultName": "Make_automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rmPe7iUA4CerYm2Dw_-6E8-sHgyBeFR5hIhL8LVgx30/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rmPe7iUA4CerYm2Dw_-6E8-sHgyBeFR5hIhL8LVgx30/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "id",
+              "lookupValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {
+          "dataLocationOnSheet": {
+            "values": {
+              "rangeDefinition": "detectAutomatically"
+            }
+          },
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        64,
+        -32
+      ],
+      "id": "016b93d4-46a8-4616-9ad9-9acee9eafaac",
+      "name": "Get row(s) in sheet",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5zDUH89yXWwynETo",
+          "name": "Google Sheets account"
+        }
+      }
     }
   ],
-  "pinData": {},
   "connections": {
     "Gmail Trigger": {
       "main": [
         [
           {
-            "node": "AI Agent",
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
             "type": "main",
             "index": 0
           }
@@ -162,11 +271,23 @@
         ]
       ]
     },
-    "AI Agent": {
+    "If": {
+      "main": [
+        [],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
       "main": [
         [
           {
-            "node": "Append row in sheet",
+            "node": "If",
             "type": "main",
             "index": 0
           }
@@ -174,16 +295,9 @@
       ]
     }
   },
-  "active": false,
-  "settings": {
-    "executionOrder": "v1",
-    "binaryMode": "separate"
-  },
-  "versionId": "02bb6a32-178b-4363-b919-eee29d14760a",
+  "pinData": {},
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "6ea2ff2bd80fd0e91c36a581ac6ef409e08379a175ab07875060d9f884fa9465"
-  },
-  "id": "wn4GPPMntAK2adZF",
-  "tags": []
+  }
 }
