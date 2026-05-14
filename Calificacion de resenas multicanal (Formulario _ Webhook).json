@@ -1,0 +1,349 @@
+{
+  "name": "Calificacion de resenas multicanal (Formulario / Webhook)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "8d40ac0b-f3e5-4302-b9a9-bfca65c4554a",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -64,
+        -160
+      ],
+      "id": "ebe7a2a3-10b0-453f-ab2a-cb9aaa902b46",
+      "name": "Webhook",
+      "webhookId": "8d40ac0b-f3e5-4302-b9a9-bfca65c4554a"
+    },
+    {
+      "parameters": {
+        "formTitle": "Reseña",
+        "formDescription": "Explica brevemente su experiencia con el sistema",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Nombre",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Calificacion",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "1"
+                  },
+                  {
+                    "option": "2"
+                  },
+                  {
+                    "option": "3"
+                  },
+                  {
+                    "option": "4"
+                  },
+                  {
+                    "option": "5"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Feedback",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -64,
+        16
+      ],
+      "id": "2c71c847-9385-4bba-976e-5ba6aebc1d7b",
+      "name": "On form submission",
+      "webhookId": "f591751d-47d8-4b89-80a2-582b2d2c4575"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Reseña: {{ $json.feedback }}\nCalificacion (1-5):  {{ $json.calificacion }}",
+        "options": {
+          "systemMessage": "Eres un asistente de analisis de sentimientos, a partir de una reseña explica en maximo 30 palabras como mejorar la experiencia en la app."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        656,
+        -96
+      ],
+      "id": "46b25a0b-afef-4bd7-8fff-47c12acf9877",
+      "name": "Agente IA para clasificar reseñas"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        576,
+        80
+      ],
+      "id": "07b1344d-54ff-4478-bf7c-9ea0f00808f3",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "DoSgJrpcpgcjgRbW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1rmPe7iUA4CerYm2Dw_-6E8-sHgyBeFR5hIhL8LVgx30",
+          "mode": "list",
+          "cachedResultName": "Make_automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rmPe7iUA4CerYm2Dw_-6E8-sHgyBeFR5hIhL8LVgx30/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2127889532,
+          "mode": "list",
+          "cachedResultName": "Clasificacion de reseñas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rmPe7iUA4CerYm2Dw_-6E8-sHgyBeFR5hIhL8LVgx30/edit#gid=2127889532"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Fecha": "={{ $('Code in JavaScript').item.json.fecha }}",
+            "Nombre": "={{ $('Code in JavaScript').item.json.nombre }}",
+            "Email": "={{ $('Code in JavaScript').item.json.email }}",
+            "Calificacion": "={{ $('Code in JavaScript').item.json.calificacion }}",
+            "Feedback": "={{ $('Code in JavaScript').item.json.feedback }}",
+            "Resumen IA": "={{ $json.output }}",
+            "Nodo (origen)": "={{ $('Code in JavaScript').item.json.submitionType }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Calificacion",
+              "displayName": "Calificacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Feedback",
+              "displayName": "Feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nodo (origen)",
+              "displayName": "Nodo (origen)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Resumen IA",
+              "displayName": "Resumen IA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        976,
+        -96
+      ],
+      "id": "94041596-0605-4206-bf95-19e330e8b175",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5zDUH89yXWwynETo",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Ejemplo de post\n{\n    \"email\": \"ezequielmtartaglia@gmail.com\",\n    \"nombre\": \"Ezequiel Matias Tartaglia\",\n    \"calificacion\": 3,\n    \"feedback\": \"Me gusto la UI pero podria mejorar su accesibilidad para mi que soy daltonico, no puedo distinguir ciertos colores en la paleta de colores que tiene la app.\"\n}",
+        "height": 352,
+        "width": 436
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -176,
+        -400
+      ],
+      "typeVersion": 1,
+      "id": "da28ca86-f6b1-4d46-b42f-37926ba3e3b1",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        224,
+        -96
+      ],
+      "id": "e86e5830-dd33-4617-b988-3b6023ae5c96",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "jsCode": "const fecha = $input.first().json.currentDate\n\nlet webhookData = {}\nlet formData = {}\n\ntry {\n  webhookData = $('Webhook').first().json.body || {}\n} catch (e) {}\n\ntry {\n  formData = $('On form submission').first().json || {}\n} catch (e) {}\n\nconst isWebhook = Object.keys(webhookData).length > 0\nconst isForm = Object.keys(formData).length > 0\n\nconst submitionType = isWebhook\n  ? \"Webhook\"\n  : isForm\n    ? \"Formulario\"\n    : \"Desconocido\"\n\nconst nombre =\n  webhookData.nombre ||\n  formData.Nombre ||\n  \"\"\n\nconst email =\n  webhookData.email ||\n  formData.Email ||\n  \"\"\n\nconst calificacion =\n  webhookData.calificacion ||\n  formData.Calificacion ||\n  1\n\nconst feedback =\n  webhookData.feedback ||\n  formData.Feedback ||\n  \"\"\n\nreturn [\n  {\n    json: {\n      fecha,\n      submitionType,\n      nombre,\n      email,\n      calificacion,\n      feedback,\n    }\n  }\n]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        -96
+      ],
+      "id": "7b262f32-0b05-46c3-a641-5931d3f04c05",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente IA para clasificar reseñas",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente IA para clasificar reseñas": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Agente IA para clasificar reseñas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "77de35a6-c67b-439f-adf4-be6335d3dddc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6ea2ff2bd80fd0e91c36a581ac6ef409e08379a175ab07875060d9f884fa9465"
+  },
+  "id": "t4he1iXiJkLtrWz6",
+  "tags": []
+}
