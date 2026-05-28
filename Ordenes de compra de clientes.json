@@ -1,0 +1,494 @@
+{
+  "name": "Ordenes de compra de clientes",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Nueva orden de compra",
+        "formDescription": "Gracias por elegirnos, completa el siguiente formulario para finalizar tu orden de compra.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Nombre"
+            },
+            {
+              "fieldLabel": "Apellido"
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email"
+            },
+            {
+              "fieldLabel": "Escribe lo que necesitas de nuestros articulos, si quieres saber mas visita www.miweb.com/catalog",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {
+          "ignoreBots": true
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        -128
+      ],
+      "id": "d10ef3d3-b2bd-4821-a196-30cf9b27af80",
+      "name": "On form submission",
+      "webhookId": "11ce1c7b-8b7f-49fb-9411-c62eb89b5de8"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1rmPe7iUA4CerYm2Dw_-6E8-sHgyBeFR5hIhL8LVgx30",
+          "mode": "list",
+          "cachedResultName": "Make_automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rmPe7iUA4CerYm2Dw_-6E8-sHgyBeFR5hIhL8LVgx30/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1678980730,
+          "mode": "list",
+          "cachedResultName": "Productos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rmPe7iUA4CerYm2Dw_-6E8-sHgyBeFR5hIhL8LVgx30/edit#gid=1678980730"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Block",
+              "lookupValue": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        -128
+      ],
+      "id": "ce364074-153f-49e8-b0c4-2db30ffbf9ca",
+      "name": "Get row(s) in sheet",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5zDUH89yXWwynETo",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=En base a la siguiente lista de productos: {{ $json.contexto_productos }} devuelve el monto total a pagar segun la siguiente informacion del cliente y su orden de compra: {{ $('On form submission').item.json['Escribe lo que necesitas de nuestros articulos, si quieres saber mas visita www.miweb.com/catalog'] }}",
+        "options": {
+          "systemMessage": "=Sos un asistente de ventas e inventario.\n\nEn base a la siguiente lista de productos disponibles:\n\n{{ $json.contexto_productos }}\n\nY la siguiente solicitud del cliente:\n\n{{ $('On form submission').item.json['Escribe lo que necesitas de nuestros articulos, si quieres saber mas visita www.miweb.com/catalog'] }}\n\nTu tarea es:\n\n1. Interpretar qué productos solicita el cliente.\n2. Verificar si existen en el inventario.\n3. Calcular el monto total.\n4. Responder SIEMPRE usando el JSON estructurado definido.\n\nReglas:\n- Si todos los productos existen:\n  - devolver status = \"success\"\n  - incluir productos y total\n  - incluir respuesta_cliente amigable.\n\n- Si hay productos inexistentes, ambiguos o faltan datos:\n  - devolver status = \"error\"\n  - generar un email profesional solicitando aclaración.\n  - completar error_email.subject y error_email.body. "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        896,
+        -128
+      ],
+      "id": "07283d1f-bf18-49dc-8179-94838aeca3fe",
+      "name": "AI Agent",
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "catalog",
+        "include": "allFieldsExcept",
+        "fieldsToExclude": "Block,row_number",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        448,
+        -128
+      ],
+      "id": "288b2b3a-77e5-4f09-90d8-b60f1e94ca16",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.first().json[0]?.catalog || $input.first().json.catalog || [];\n\nconst productos = items.map((item) => {\n  return `\nCódigo: ${item.codigo}\nNombre: ${item.nombre}\nCategoría: ${item.categoria}\nUnidad de medida: ${item[\"unidad de medida\"]}\nStock: ${item[\"cantidad en stock\"]}\nPrecio: ${item[\"precio\"]}\n`;\n});\n\nreturn [\n  {\n    json: {\n      contexto_productos: productos.join(\"\\n-------------------\\n\"),\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        -128
+      ],
+      "id": "58bc0fb7-3929-4b9d-bf59-3d47c4717fbe",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        864,
+        48
+      ],
+      "id": "1066b971-4f61-4881-8e44-b14ddcf4dba5",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "DoSgJrpcpgcjgRbW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.output;\n\n// Remover ```json y ```\nconst clean = raw\n  .replace(/```json/g, \"\")\n  .replace(/```/g, \"\")\n  .trim();\n\nlet parsed;\n\ntry {\n  parsed = JSON.parse(clean);\n} catch (error) {\n  return [\n    {\n      json: {\n        status: \"error\",\n        parsing_error: true,\n        raw_response: raw,\n        message: error.message,\n      },\n    },\n  ];\n}\n\n// Retornar estructura manipulable\nreturn [\n  {\n    json: {\n      status: parsed.status || null,\n      total: parsed.total || 0,\n      respuesta_cliente: parsed.respuesta_cliente || null,\n      productos: parsed.productos || [],\n      error_email: parsed.error_email || null,\n\n      // Datos extra útiles\n      cantidad_productos: parsed.productos?.length || 0,\n\n      // JSON completo\n      full_response: parsed,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1248,
+        -128
+      ],
+      "id": "17eb5980-dd56-4b80-bda5-b53875aae873",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": "Orden de pedido compra enviada correctamente",
+        "message": "={{ $json.full_response.respuesta_cliente }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2368,
+        -128
+      ],
+      "id": "de4a1c52-13d8-4214-8201-31220d3072bb",
+      "name": "Send a message",
+      "webhookId": "40e8e68d-c755-4ba2-b525-d9e1215534bc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "X5WVX6tEpxZP6yCa",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1rmPe7iUA4CerYm2Dw_-6E8-sHgyBeFR5hIhL8LVgx30",
+          "mode": "list",
+          "cachedResultName": "Make_automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rmPe7iUA4CerYm2Dw_-6E8-sHgyBeFR5hIhL8LVgx30/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1462707868,
+          "mode": "list",
+          "cachedResultName": "Ordenes de compra",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rmPe7iUA4CerYm2Dw_-6E8-sHgyBeFR5hIhL8LVgx30/edit#gid=1462707868"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "total": "={{ $('Code in JavaScript1').item.json.full_response.total }}",
+            "email": "={{ $('On form submission').item.json.Email }}",
+            "nombre": "={{ $('On form submission').item.json.Nombre }}",
+            "apellido": "={{ $('On form submission').item.json.Apellido }}",
+            "fecha": "={{ $('On form submission').item.json.submittedAt }}",
+            "id": "={{ $json.nuevo_id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "total",
+              "displayName": "total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "apellido",
+              "displayName": "apellido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2144,
+        -128
+      ],
+      "id": "199622b8-88a9-4e52-84e3-f92b001a7d9d",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5zDUH89yXWwynETo",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1rmPe7iUA4CerYm2Dw_-6E8-sHgyBeFR5hIhL8LVgx30",
+          "mode": "list",
+          "cachedResultName": "Make_automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rmPe7iUA4CerYm2Dw_-6E8-sHgyBeFR5hIhL8LVgx30/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1462707868,
+          "mode": "list",
+          "cachedResultName": "Ordenes de compra",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1rmPe7iUA4CerYm2Dw_-6E8-sHgyBeFR5hIhL8LVgx30/edit#gid=1462707868"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1472,
+        -128
+      ],
+      "id": "158e3f4d-b798-493f-a5c6-599e4fe506cc",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5zDUH89yXWwynETo",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "ordenes_de_compra",
+        "include": "specifiedFields",
+        "fieldsToInclude": "id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1696,
+        -128
+      ],
+      "id": "7a0539af-9d0f-466f-958f-98571ad35cde",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const ordenes = $input.first().json.ordenes_de_compra || [];\n\nconst maxId = Math.max(...ordenes.map(o => o.id));\n\nreturn [\n  {\n    json: {\n      nuevo_id: maxId + 1\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        -128
+      ],
+      "id": "9de6e860-b59b-455a-b361-8b1f2ae1f1bc",
+      "name": "Code in JavaScript2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "2893b873-fc5a-49b9-87cf-633857c938dc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6ea2ff2bd80fd0e91c36a581ac6ef409e08379a175ab07875060d9f884fa9465"
+  },
+  "id": "79UCuEbSF4pulvMK",
+  "tags": []
+}
