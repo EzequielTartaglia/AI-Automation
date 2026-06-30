@@ -1,0 +1,678 @@
+{
+  "name": "Ejemplo PF",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "=https://www.thecocktaildb.com/api/json/v1/1/search.php?s={{ $json['Seleccione su categoria deseada'] }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        112,
+        -288
+      ],
+      "id": "3c7533a9-5d23-4fc0-ac1a-d56ca0f26c85",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "jka6hOMp4tCL80Xx",
+          "name": "Credenciales Coderhouse"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Json: {{ $('Code in JavaScript').item.json.text }}",
+        "options": {
+          "systemMessage": "Actuá como analista gastronomico. Resumí en 3 oraciones este json para recomendar uno que se adapte a un publico masculino de 51 años (no es necesario aclarar la edad en el mensaje), tono formal pero con un enfoque en vender(comercial). Con esto se enviara un email dirigido al cliente"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1136,
+        -592
+      ],
+      "id": "0f9da363-1efc-4f2e-92eb-bdaec23f01fc",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1280,
+        -368
+      ],
+      "id": "bb523aba-66d9-428f-bff3-9550a2b1e9cb",
+      "name": "Simple Memory",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": "Test: Api",
+        "message": "=Hola cliente\n\n{{ $json.Respuesta }}\n\nSi quiere consultar sobre otra categoria de cocteles puede ver el menu a continuación...",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1712,
+        -496
+      ],
+      "id": "a0c6cb4e-fce9-4f61-b19f-6e4e3e3f44e5",
+      "name": "Send a message",
+      "webhookId": "4cc49a27-2982-441a-9192-ba5bdcc5530c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "X5WVX6tEpxZP6yCa",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\n\nreturn [\n  {\n    json: {\n      text: JSON.stringify(data, null, 2)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        -288
+      ],
+      "id": "294c7359-b107-4997-9497-cc6376611983",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "formTitle": "Bienvenido a la bodega",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Seleccione su categoria deseada",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Margarita"
+                  },
+                  {
+                    "option": "Vodka"
+                  },
+                  {
+                    "option": "Ron"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email"
+            }
+          ]
+        },
+        "options": {
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "En breve recibias un mail con una recomendación acorde a tus gustos."
+            }
+          },
+          "ignoreBots": true
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -112,
+        -288
+      ],
+      "id": "6d85a4cb-f92b-4745-8c39-271d7cae4efc",
+      "name": "On form submission",
+      "webhookId": "e0949b58-73a7-45b9-982a-bb369295a9e4",
+      "alwaysOutputData": false,
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        -368
+      ],
+      "id": "00536032-d80a-4cab-9132-96aa8035f612",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "DoSgJrpcpgcjgRbW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1zQAPq-VNRh8GSAQgEfYYcFp26SDCGkTwIC4TAAP-EN4",
+          "mode": "list",
+          "cachedResultName": "Test_Coderhouse",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zQAPq-VNRh8GSAQgEfYYcFp26SDCGkTwIC4TAAP-EN4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "X",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zQAPq-VNRh8GSAQgEfYYcFp26SDCGkTwIC4TAAP-EN4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $('On form submission').item.json.submittedAt }}",
+            "Categoria": "={{ $('On form submission').item.json['Seleccione su categoria deseada'] }}",
+            "Clasificacion": "Apto para mayores",
+            "Respuesta": "={{ $json.output }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Categoria",
+              "displayName": "Categoria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Respuesta",
+              "displayName": "Respuesta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Clasificacion",
+              "displayName": "Clasificacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1488,
+        -496
+      ],
+      "id": "e260b12a-1317-4375-a708-5c88d48c1166",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5zDUH89yXWwynETo",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Json: {{ $json.text }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "systemMessage": "Eres un asistente de clasificacion a partir de un json debes devolver como respuesta unicamente la palabra \"apto_mayores_50\" si se considera una bebida con una graduacion alcoholica menor al 50% sino \"apto_hasta_50\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        -288
+      ],
+      "id": "5cb8f094-a8fb-43d7-918c-d9860dc96b2d",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "DoSgJrpcpgcjgRbW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.content.parts[0].text }}",
+                    "rightValue": "apto_mayores_50",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "30b0c9cf-0173-4eb2-a559-8f409be76db4"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Apto mayores"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "fb72b16e-88df-4b1d-ac4a-be343dc49618",
+                    "leftValue": "={{ $json.content.parts[0].text }}",
+                    "rightValue": "apto_hasta_50",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Solo apto menores"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        912,
+        -288
+      ],
+      "id": "2ac25506-9397-4fe9-a6fc-f809b06fa264",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Json: {{ $('Code in JavaScript').item.json.text }}",
+        "options": {
+          "systemMessage": "Actuá como analista gastronomico. Resumí en 3 oraciones este json para recomendar uno que se adapte a un publico masculino de 31 años (no es necesario aclarar la edad en el mensaje), tono formal pero con un enfoque en vender(comercial). Con esto se enviara un email dirigido al cliente"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1136,
+        -96
+      ],
+      "id": "e961532f-1aec-4ba3-aeed-4a4fd2ddc3c2",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1280,
+        144
+      ],
+      "id": "09f43cfe-290b-405c-b8ac-4d6aaeae5c23",
+      "name": "Simple Memory1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": "Consulta sobre cocteles (API AUTOMATION TEST)",
+        "message": "=Hola cliente\n\n{{ $json.Respuesta }}\n\nSi quiere consultar sobre otra categoria de cocteles puede ver el menu a continuación...",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1712,
+        -96
+      ],
+      "id": "ddd532c4-b2f7-43ff-9cd5-3a6b7a3236be",
+      "name": "Send a message1",
+      "webhookId": "4cc49a27-2982-441a-9192-ba5bdcc5530c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "X5WVX6tEpxZP6yCa",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        144
+      ],
+      "id": "854f6739-d98b-4e6a-a74a-bed9fef0c820",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "DoSgJrpcpgcjgRbW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1zQAPq-VNRh8GSAQgEfYYcFp26SDCGkTwIC4TAAP-EN4",
+          "mode": "list",
+          "cachedResultName": "Test_Coderhouse",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zQAPq-VNRh8GSAQgEfYYcFp26SDCGkTwIC4TAAP-EN4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "X",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zQAPq-VNRh8GSAQgEfYYcFp26SDCGkTwIC4TAAP-EN4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $('On form submission').item.json.submittedAt }}",
+            "Clasificacion": "Apto hasta 50",
+            "Respuesta": "={{ $json.output }}",
+            "Categoria": "={{ $('On form submission').item.json['Seleccione su categoria deseada'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Categoria",
+              "displayName": "Categoria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Respuesta",
+              "displayName": "Respuesta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Clasificacion",
+              "displayName": "Clasificacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1488,
+        -96
+      ],
+      "id": "fcffecb5-629e-4c91-8b83-e9c4312eee8d",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5zDUH89yXWwynETo",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "d350b366-8127-4859-8e30-33a8c4e118a6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6ea2ff2bd80fd0e91c36a581ac6ef409e08379a175ab07875060d9f884fa9465"
+  },
+  "nodeGroups": [],
+  "id": "BgnVBKPig96_X5Xv9ZvRJ",
+  "tags": []
+}
